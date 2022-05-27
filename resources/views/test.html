@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+</head>
+<body>
+    <div id="canvas-wrapper" style="padding: 0 20px;">
+        <canvas id="stat-chart"></canvas>
+    </div>
+    <select onchange="update()" name="filter-date" id="filter-date">
+        <option value="hari">Hari ini</option>
+        <option value="pekan">7 Hari</option>
+        <option value="bulan">30 Hari</option>
+    </select>
+    <script>
+        const chartCanvas = document.getElementById('stat-chart').getContext('2d')
+        const filterDate = document.getElementById('filter-date')
+        const chartWrapper = document.getElementById('canvas-wrapper')
+
+        let delayed
+        let gradient = chartCanvas.createLinearGradient(0,0,0,450)
+        gradient.addColorStop(0, 'rgba(253,230,138, 1)');
+        gradient.addColorStop(0.5, 'rgba(253,230,138, 0.5)');
+        gradient.addColorStop(1, 'rgba(253,230,138, 0.2)');
+
+        const getData = async () => {
+            let response = await fetch(`${window.location.origin}/api/get-prod?filter=${filterDate.value}&machineid=abc123`)
+            let data = await response.json()
+
+            return {
+                title: filterDate.value === 'hari' ? 'Produksi hari ini' : filterDate.value === 'pekan' ? 'Produksi selama 7 hari' : 'Produksi selama 30 hari',
+                data: data.map((e) => e.weight),
+                labels: data.map((e) => {return filterDate.value === 'hari' ? e.created_at.split(' ')[1].substring(0, 5) : e.created_at.split(' ')[0].substring(5).replace('-', '/')})
+            }
+        }
+
+        let datasets = {
+            labels: [],
+            datasets: [{
+                backgroundColor: gradient,
+                borderWidth: 4,
+                hoverBorderWidth: 4,
+                pointRadius: 4,
+                pointHoverRadius: 8,
+                tension: 0,
+                hitRadius: 30,
+                pointBackgroundColor: '#fff',
+                borderColor: '#fbbf24',
+                fill: true,
+                data: []
+            }]
+        }
+
+        let config = {
+            type: 'line',
+            data: datasets,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: {
+                    onComplete: () => {
+                        delayed = true;
+                    },
+                    delay: (context) => {
+                        let delay = 0;
+                        if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                        delay = context.dataIndex * 300 + context.datasetIndex * 100;
+                        }
+                        return delay;
+                    },
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: '',
+                        padding: {
+                            bottom: 20,
+                            top: 20
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgb(39,39,42)',
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: (value, index, ticks) => {
+                                return value + ' Kg'
+                            }
+                        }
+                    }
+                },
+            },
+        }
+
+        const update = async () => {
+            let newData = await getData()
+            console.log(newData)
+            statChart['data']['labels'] = newData.labels
+            statChart.data.datasets.forEach((dataset) => {
+                dataset['data'] = newData.data
+            })
+            statChart.options.plugins.title.text = newData.title
+            statChart.update()
+        }
+
+        let statChart = new Chart(chartCanvas, config)
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                filterDate.value = 'pekan'
+                filterDate.dispatchEvent(new Event('change'))
+            },200)
+        })
+    </script>
+</body>
+</html>
