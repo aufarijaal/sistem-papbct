@@ -4,7 +4,7 @@
     <div class="login-wrapper w-full flex justify-center lg:items-center h-full">
         <div class="wrapper flex flex-col gap-10 lg:bg-white lg:border-2 lg:border-stone-300/40 w-max h-max p-6 rounded-xl">
             <div class="w-full">
-                <form action="#" method="post" class="flex flex-col gap-4 items-center">
+                <form action="{{ route('register') }}" method="post" class="flex flex-col gap-4 items-center">
                     @csrf
                     <a href="{{ url('/') }}">
                         <img src="{{ asset('icons/icon-72x72.png') }}" class="scale-90">
@@ -18,6 +18,12 @@
                         <label for="email">Email</label>
                         <input required id="email" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="email" name="email" placeholder="Masukkan email">
                     </div> --}}
+                    @if (Request::is('register-owner'))
+                        <div class="flex flex-col gap-2">
+                            <label for="machineid">ID Mesin</label>
+                            <input required id="machineid" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="machineid" placeholder="Masukkan kata sandi">
+                        </div>
+                    @endif
                     <div class="flex flex-col gap-2">
                         <label for="password">Kata sandi</label>
                         <input required id="password" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="password" placeholder="Masukkan kata sandi">

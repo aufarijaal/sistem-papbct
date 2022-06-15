@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\MachineNotOwned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +54,34 @@ class AuthController extends Controller
         return redirect('dashboard');
     }
 
+    public function registerOwner(Request $request)
+    {
+        if($request->method() == 'GET')
+        {
+            return view('auth.register-owner');
+        }
+        $validated = $request->validate([
+            'username_owner' => 'required|min:3|unique:users,username',
+            'machineid' => new MachineNotOwned,
+            'password_owner' => 'required|min:3',
+            'confirm_password_owner' => 'required|same:password_owner'
+        ]);
+        // dd($validated);
+        $user = User::create([
+            'username' => $validated['username_owner'],
+            'password' => $validated['password_owner'],
+            'role' => 'owner',
+        ]);
+        DB::table('machines')
+        ->where('machineid', $validated['machineid'])
+        ->update([
+            'owner_username' => $validated['username_owner']
+        ]);
+        dd('successfully registered as owner');
+        auth()->login($user);
+
+        return redirect('dashboard');
+    }
     public function logout (Request $request)
     {
         Auth::logout();

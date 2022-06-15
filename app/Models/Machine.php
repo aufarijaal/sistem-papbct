@@ -13,6 +13,7 @@ class Machine extends Model
         'machineid',
         'userid',
         'isactive',
+        'isayakanactive',
         'temperature'
     ];
 }

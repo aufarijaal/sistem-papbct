@@ -4,22 +4,37 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        @laravelPWA
+        {{-- @laravelPWA --}}
         <title>{{ env('APP_NAME', 'Sistem Kontrol dan Monitoring Prototype Alat Pembuat Bubuk Cangkang Telur') }}</title>
 
         <!-- Fonts -->
         {{-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"> --}}
 
         <!-- Styles -->
-        <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+        {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
 
         {{-- @livewireStyles --}}
 
         <!-- Scripts -->
-        <script src="{{ mix('js/app.js') }}" defer></script>
+        <script src="{{ asset('js/app.js') }}" defer></script>
         <script src="{{ asset('js/chart.min.js') }}"></script>
         @stack('styles')
         <style>
+            * {
+                font-family: 'Inter', sans-serif;
+            }
+            body {
+                display: flex;
+                height: 100vh;
+            }
+            #app {
+                height: 100%;
+                width: 100%;
+            }
             .dashboard {
                 display: grid;
                 height: 100%;
@@ -68,6 +83,10 @@
                     opacity: 0;
                 }
             }
+            #form-tambah-produksi {
+                display: flex;
+                flex-direction: column;
+            }
             /* sm */
             @media (min-width: 640px) {
 
@@ -78,6 +97,9 @@
             }
             /* lg */
             @media (min-width: 1024px) {
+            #form-tambah-produksi {
+                display: block;
+            }
             .dashboard {
                 grid-template-columns: 80px auto;
                 grid-template-rows: 1fr;
@@ -110,7 +132,35 @@
                     <svg width="24" height="24" class="fill-zinc-700 cursor-pointer" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.21 4.387.083-.094a1 1 0 0 1 1.32-.083l.094.083L12 10.585l6.293-6.292a1 1 0 1 1 1.414 1.414L13.415 12l6.292 6.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083L12 13.415l-6.293 6.292a1 1 0 0 1-1.414-1.414L10.585 12 4.293 5.707a1 1 0 0 1-.083-1.32l.083-.094-.083.094Z"/></svg>
                 </div>
                 <a href="{{ route('settings') }}" class="font-bold w-full text-center py-2 rounded-lg bg-sky-100 text-sky-600">Pengaturan</a>
-                <div onclick="emitLogout()" class="font-bold w-full text-center py-2 rounded-lg bg-sky-100 text-sky-600 cursor-pointer">Logout</div>
+                <div class="font-bold w-full text-center py-2 rounded-lg bg-sky-100 text-sky-600 cursor-pointer" onclick="document.getElementById('lgt').submit()">
+                    <form action="{{ route('logout') }}" method="GET" class="w-full h-full" id="lgt" x-data>
+                        @csrf
+                        <a class="flex justify-center items-center w-full h-full group" id="form-logout-mobile">
+                            Logout
+                        </a>
+                    </form>
+                </div>
+                <div id="close-modal" class="w-full flex justify-end">
+                    <svg width="24" height="24" class=" fill-transparent" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.21 4.387.083-.094a1 1 0 0 1 1.32-.083l.094.083L12 10.585l6.293-6.292a1 1 0 1 1 1.414 1.414L13.415 12l6.292 6.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083L12 13.415l-6.293 6.292a1 1 0 0 1-1.414-1.414L10.585 12 4.293 5.707a1 1 0 0 1-.083-1.32l.083-.094-.083.094Z"/></svg>
+                </div>
+            </div>
+        </div>
+        {{-- Modal untuk reset password pekerja --}}
+        <div class="w-screen h-screen bg-black/80 fixed overflow-x-hidden overflow-y-hidden hidden justify-center items-center" style="z-index: 999999" id="reset-password-pekerja-modal">
+            <div class="w-80 h-44 bg-white absolute rounded-lg flex flex-col justify-center items-center gap-1 px-2" style="z-index: 10000000">
+                <div id="close-modal" class="w-full flex justify-end" onclick="toggleModalResetPasswordPekerja()">
+                    <svg width="24" height="24" class="fill-zinc-700 cursor-pointer" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.21 4.387.083-.094a1 1 0 0 1 1.32-.083l.094.083L12 10.585l6.293-6.292a1 1 0 1 1 1.414 1.414L13.415 12l6.292 6.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083L12 13.415l-6.293 6.292a1 1 0 0 1-1.414-1.414L10.585 12 4.293 5.707a1 1 0 0 1-.083-1.32l.083-.094-.083.094Z"/></svg>
+                </div>
+                <div class="w-full">
+                    <form action="{{ route('resetpasswordpekerja') }}" method="POST" class="w-full h-full flex items-center flex-col gap-1" id="form-reset-password-pekerja">
+                        @csrf
+                        <input type="hidden" name="pekerja_id" id="pekerja_id">
+                        <div class="flex flex-col gap-2">
+                            <input id="pekerja_password" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="pekerja_password" required placeholder="sandi pekerja">
+                        </div>
+                        <button type="submit" class="active:bg-sky-300 active:text-sky-600 bg-sky-200 text-sky-500 font-bold w-36 h-10 rounded-lg">Simpan Sandi</button>
+                    </form>
+                </div>
                 <div id="close-modal" class="w-full flex justify-end">
                     <svg width="24" height="24" class=" fill-transparent" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.21 4.387.083-.094a1 1 0 0 1 1.32-.083l.094.083L12 10.585l6.293-6.292a1 1 0 1 1 1.414 1.414L13.415 12l6.292 6.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083L12 13.415l-6.293 6.292a1 1 0 0 1-1.414-1.414L10.585 12 4.293 5.707a1 1 0 0 1-.083-1.32l.083-.094-.083.094Z"/></svg>
                 </div>
@@ -146,17 +196,19 @@
                           </div>
                       </a>
                     </li>
-                    <li class="w-full h-full cursor-pointer" title="Statistik">
-                      <a href="{{ route('stats') }}" class="flex justify-center items-center w-full h-full group">
-                      <div class="icon p-2 rounded-md hover:bg-white/10 {{ Request::is('stats') ? 'bg-white/10' : '' }}">
-                        @if (!Request::is('stats'))
-                            <svg width="36" height="36" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="transition"><path d="M18.25 2.997A2.75 2.75 0 0 1 21 5.747v12.5a2.75 2.75 0 0 1-2.75 2.75H5.75A2.75 2.75 0 0 1 3 18.247v-12.5a2.75 2.75 0 0 1 2.75-2.75h12.5Zm0 1.5H5.75c-.69 0-1.25.56-1.25 1.25v12.5c0 .69.56 1.25 1.25 1.25h12.5c.69 0 1.25-.56 1.25-1.25v-12.5c0-.69-.56-1.25-1.25-1.25ZM7.75 9c.38 0 .693.281.743.646l.007.101v6.507a.748.748 0 0 1-.75.746.75.75 0 0 1-.743-.645L7 16.254V9.747C7 9.335 7.336 9 7.75 9Zm8.5-2c.38 0 .694.275.743.63l.007.1v8.541a.74.74 0 0 1-.75.73.744.744 0 0 1-.743-.631l-.007-.099V7.73a.74.74 0 0 1 .75-.73Zm-4.275 4.997a.73.73 0 0 1 .732.62l.008.1.035 3.547a.73.73 0 0 1-.725.733.73.73 0 0 1-.732-.62l-.008-.1-.035-3.546a.73.73 0 0 1 .725-.734Z" fill="#fff"/></svg>
-                        @else
-                            <svg width="36" height="36" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="transition"><path d="M18.25 2.997A2.75 2.75 0 0 1 21 5.747v12.5a2.75 2.75 0 0 1-2.75 2.75H5.75A2.75 2.75 0 0 1 3 18.247v-12.5a2.75 2.75 0 0 1 2.75-2.75h12.5ZM7.75 9a.748.748 0 0 0-.75.747v6.507c0 .412.336.746.75.746s.75-.334.75-.746V9.747A.748.748 0 0 0 7.75 9Zm8.5-2a.74.74 0 0 0-.75.73v8.541c0 .403.336.73.75.73a.74.74 0 0 0 .75-.73V7.73a.74.74 0 0 0-.75-.73Zm-4.275 4.997a.73.73 0 0 0-.725.734l.035 3.547a.73.73 0 0 0 .74.72.73.73 0 0 0 .725-.734l-.035-3.548a.73.73 0 0 0-.74-.719Z" fill="#fff"/></svg>
-                        @endif
-                      </div>
-                      </a>
-                    </li>
+                    @if (auth()->user()->role == 'owner')
+                        <li class="w-full h-full cursor-pointer" title="Statistik">
+                        <a href="{{ route('stats') }}" class="flex justify-center items-center w-full h-full group">
+                        <div class="icon p-2 rounded-md hover:bg-white/10 {{ Request::is('stats') ? 'bg-white/10' : '' }}">
+                            @if (!Request::is('stats'))
+                                <svg width="36" height="36" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="transition"><path d="M18.25 2.997A2.75 2.75 0 0 1 21 5.747v12.5a2.75 2.75 0 0 1-2.75 2.75H5.75A2.75 2.75 0 0 1 3 18.247v-12.5a2.75 2.75 0 0 1 2.75-2.75h12.5Zm0 1.5H5.75c-.69 0-1.25.56-1.25 1.25v12.5c0 .69.56 1.25 1.25 1.25h12.5c.69 0 1.25-.56 1.25-1.25v-12.5c0-.69-.56-1.25-1.25-1.25ZM7.75 9c.38 0 .693.281.743.646l.007.101v6.507a.748.748 0 0 1-.75.746.75.75 0 0 1-.743-.645L7 16.254V9.747C7 9.335 7.336 9 7.75 9Zm8.5-2c.38 0 .694.275.743.63l.007.1v8.541a.74.74 0 0 1-.75.73.744.744 0 0 1-.743-.631l-.007-.099V7.73a.74.74 0 0 1 .75-.73Zm-4.275 4.997a.73.73 0 0 1 .732.62l.008.1.035 3.547a.73.73 0 0 1-.725.733.73.73 0 0 1-.732-.62l-.008-.1-.035-3.546a.73.73 0 0 1 .725-.734Z" fill="#fff"/></svg>
+                            @else
+                                <svg width="36" height="36" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="transition"><path d="M18.25 2.997A2.75 2.75 0 0 1 21 5.747v12.5a2.75 2.75 0 0 1-2.75 2.75H5.75A2.75 2.75 0 0 1 3 18.247v-12.5a2.75 2.75 0 0 1 2.75-2.75h12.5ZM7.75 9a.748.748 0 0 0-.75.747v6.507c0 .412.336.746.75.746s.75-.334.75-.746V9.747A.748.748 0 0 0 7.75 9Zm8.5-2a.74.74 0 0 0-.75.73v8.541c0 .403.336.73.75.73a.74.74 0 0 0 .75-.73V7.73a.74.74 0 0 0-.75-.73Zm-4.275 4.997a.73.73 0 0 0-.725.734l.035 3.547a.73.73 0 0 0 .74.72.73.73 0 0 0 .725-.734l-.035-3.548a.73.73 0 0 0-.74-.719Z" fill="#fff"/></svg>
+                            @endif
+                        </div>
+                        </a>
+                        </li>
+                    @endif
                     <li class="w-full h-full cursor-pointer hidden lg:block" title="Pengaturan">
                       <a href="{{ route('settings') }}" class="flex justify-center items-center w-full h-full group">
                       <div class="icon p-2 rounded-md hover:bg-white/10 {{ Request::is('settings') ? 'bg-white/10' : '' }}">
@@ -180,7 +232,7 @@
                       </div>
                     </li>
                     <li class="w-full h-full hidden lg:block cursor-pointer" title="logout">
-                        <form action="{{ route('logout') }}" method="POST" class="w-full h-full" x-data>
+                        <form action="{{ route('logout') }}" method="POST" class="w-full h-full" x-data id="lgt">
                             @csrf
                             <a href="{{ route('logout') }}" @click.prevent="$root.submit();" class="flex justify-center items-center w-full h-full group" id="form-logout">
                               <div class="transition group icon p-2 hover:bg-white/10 rounded-md">
@@ -193,6 +245,8 @@
                 </aside>
               </div>
         </div>
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
     @stack('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -233,6 +287,16 @@
             } else if(document.getElementById('menu-modal').classList.contains('flex')) {
                 document.getElementById('menu-modal').classList.remove('flex')
                 document.getElementById('menu-modal').classList.add('hidden')
+            }
+        }
+        const toggleModalResetPasswordPekerja = (pekerja_id) => {
+            if(document.getElementById('reset-password-pekerja-modal').classList.contains('hidden')) {
+                document.getElementById('pekerja_id').value = pekerja_id
+                document.getElementById('reset-password-pekerja-modal').classList.remove('hidden')
+                document.getElementById('reset-password-pekerja-modal').classList.add('flex')
+            } else if(document.getElementById('reset-password-pekerja-modal').classList.contains('flex')) {
+                document.getElementById('reset-password-pekerja-modal').classList.remove('flex')
+                document.getElementById('reset-password-pekerja-modal').classList.add('hidden')
             }
         }
         const emitLogout = () => {

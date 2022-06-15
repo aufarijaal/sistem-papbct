@@ -15,8 +15,9 @@ class CreateMachinesTable extends Migration
     {
         Schema::create('machines', function (Blueprint $table) {
             $table->string('machineid')->unique();
-            $table->string('userid')->nullable();
+            $table->string('owner_username')->nullable();
             $table->boolean('isactive')->default(false);
+            $table->boolean('isayakanactive')->default(false);
             $table->float('temperature')->default(0);
             $table->timestamps();
         });

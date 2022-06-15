@@ -6,29 +6,71 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Rules\MatchOldPassword;
+use Illuminate\Support\Facades\Hash;
 
 class SettingsController extends Controller
 {
     public function index()
     {
-        if(auth()->user()->isAdmin) {
-            return redirect('dashboard');
+        if(auth()->user()->role == 'admin') {
+            return redirect('admin.dashboard');
+        }elseif(auth()->user()->role == 'owner') {
+            $machineid = DB::table('machines')->where('owner_username', auth()->user()->username)->value('machineid');
+            $data_pekerja = DB::table('users')->select('id', 'username')->where('owner_username', auth()->user()->username)->get();
+            return view('settings')->with([
+                'machineid' => $machineid,
+                'employees' => $data_pekerja
+            ]);
+        }elseif(auth()->user()->role == 'pekerja'){
+            $machineid = DB::table('machines')->where('owner_username', auth()->user()->owner_username)->value('machineid');
+            return view('settings')->with('machineid', $machineid);
+        }else {
+            return '404';
         }
-        
-        $machineid = DB::table('machines')->where('userid', auth()->user()->id)->value('machineid');
-        return view('settings')->with('machineid', $machineid);
     }
-
+    public function registerPekerjaFromOwner(Request $request)
+    {
+        $validated = $request->validate([
+            'pekerja_username' => 'required|min:3|unique:users,username',
+            'pekerja_password' => 'required|min:3',
+        ]);
+        $user = User::create([
+            'username' => $validated['pekerja_username'],
+            'password' => $validated['pekerja_password'],
+            'owner_username' => auth()->user()->username
+        ]);
+        return back();
+    }
+    public function resetPasswordPekerja(Request $request)
+    {
+        $user = User::where('id', $request->pekerja_id)->update([
+            'password' => Hash::make($request->pekerja_password)
+        ]);
+        if($user > 0) {
+            return back()->with('owner-settings-pekerja-success', 'Berhasil reset kata sandi pekerja');
+        }else {
+            return back()->with('owner-settings-pekerja-failed', 'Gagal reset kata sandi pekerja');
+        }
+    }
+    public function deletePekerja(Request $request)
+    {
+        $user = User::where('id', $request->pekerja_id)->delete();
+        if($user > 0) {
+            return back()->with('owner-settings-pekerja-success', 'Berhasil hapus data pekerja');
+        }else {
+            return back()->with('owner-settings-pekerja-failed', 'Gagal hapus data pekerja');
+        }
+    }
     public function updateBond(Request $request)
     {
         $option = $request->option;
-        $userid = $request->userid ?? auth()->user()->id;
+        $owner_username = $request->owner_username ?? auth()->user()->owner_username;
 
         if($option == 'bind') {
             $machine = DB::table('machines')
-                            ->where('userid', null, null)
+                            ->where('owner_username', null, null)
                             ->where('machineid', $request->machineid)
-                            ->update(['userid' => $userid]);
+                            ->update(['owner_username' => $owner_username]);
 
             if($machine == 1) {
                 return back()->with('success', 'Berhasil menghubungkan id mesin');
@@ -39,9 +81,9 @@ class SettingsController extends Controller
             }
         } else if($option == 'unbind') {
             $machine = DB::table('machines')
-            ->where('userid', $userid)
+            ->where('owner_username', $owner_username)
             ->where('machineid', $request->machineid)
-            ->update(['userid' => null]);
+            ->update(['owner_username' => null]);
 
             if($machine == 1) {
                 return back()->with('success', 'Berhasil mencopot id mesin');
@@ -62,7 +104,7 @@ class SettingsController extends Controller
         ]);
 
         $result = DB::table('machines')->insert([
-            'userid' => $request->userid,
+            'owner_username' => $request->owner_username,
             'machineid' => $request->machineid
         ]);
 
@@ -88,5 +130,14 @@ class SettingsController extends Controller
         User::find(auth()->user()->id)->update(['password'=> $request->new_password]);
 
         return back()->with('change-success', 'Kata sandi berhasil diubah');
+    }
+
+    public function createPekerjaFromOwner(Request $request)
+    {
+        User::create([
+            'username' => $request->pekerja_username,
+            'owner_username' => auth()->user()->username,
+            'password' => $request->pekerja_password
+        ]);
     }
 }

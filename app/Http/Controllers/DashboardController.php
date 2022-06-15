@@ -10,20 +10,36 @@ class DashboardController extends Controller
 {
     public function index ()
     {
-        return Auth::user()->isAdmin ?
-            view('admin.dashboard')->with('datatables', $this->getDataTables()) :
-            view('dashboard')->with('machineid', $this->getMachineId());
+        try {
+            $role = Auth::user()->role;
+            if($role == 'admin') {
+                return view('admin.dashboard')->with('datatables', $this->getDataTables());
+            }elseif ($role == 'owner' || $role == 'pekerja') {
+                // dd($this->getMachineId());
+                return view('dashboard')->with('machineid', $this->getMachineId());
+            }else {
+                return '404';
+            }
+        } catch (\Throwable $th) {
+            dd($th);
+        }
     }
 
     public function getDataTables()
     {
-        $datatables = DB::table('machines')->select('machineid', 'userid')->get();
+        $datatables = DB::table('machines')->select('machineid', 'owner_username')->get();
         return $datatables;
     }
 
     public function getMachineId()
     {
-        $machineid = DB::table('machines')->where('userid', auth()->user()->id)->value('machineid');
+        $role = Auth::user()->role;
+        $machineid = null;
+        if ($role == 'owner') {
+            $machineid = DB::table('machines')->where('owner_username', Auth::user()->username)->value('machineid');
+        } elseif($role == 'pekerja') {
+            $machineid = DB::table('machines')->where('owner_username', Auth::user()->owner_username)->value('machineid');
+        }
         return $machineid;
     }
 
@@ -39,13 +55,57 @@ class DashboardController extends Controller
                             ->select('weight')
                             ->where('machineid', $machineid)
                             ->where('weight', '>', 0)
-                            ->whereBetween('created_at', [date(now()->startOfDay()), date(now())])
+                            ->whereBetween('created_at', [date(now('Asia/Jakarta')->startOfDay()), date(now('Asia/Jakarta'))])
                             ->orderBy('created_at')
                             ->get()
                             ->sum('weight');
-            return response()->json(['isactive' => $states->isactive, 'temperature' => $states->temperature, 'todayprod' => $todayProd]);
+            return response()->json(['isactive' => (boolean)$states->isactive, 'temperature' => $states->temperature, 'todayprod' => $todayProd]);
         } catch (\Throwable $th) {
             return response()->json(['message' => $th]);
+        }
+    }
+
+    public function getAyakanState(Request $request)
+    {
+        try {
+            $machineid = $request->machineid;
+            $ayakan = DB::table('machines')
+                        ->select('isayakanactive')
+                        ->where('machineid', $machineid)
+                        ->first();
+            return response($ayakan->isayakanactive);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()]);
+        }
+    }
+
+    public function setAyakanPower(Request $request)
+    {
+        try {
+            DB::table('machines')
+            ->where('machineid', $request->machineid)
+            ->update(['isayakanactive' => $request->power]);
+
+            return response()->noContent();
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()]);
+        }
+    }
+
+    public function espGetMachineTodayProd(Request $request) {
+        try {
+            $machineid = $request->machineid;
+            $todayProd = DB::table('stats')
+            ->select('weight')
+            ->where('machineid', $machineid)
+            ->where('weight', '>', 0)
+            ->whereBetween('created_at', [date(now('Asia/Jakarta')->startOfDay()), date(now('Asia/Jakarta'))])
+            ->orderBy('created_at')
+            ->get()
+            ->sum('weight');
+            return response($todayProd / 1000);
+        } catch (\Throwable $th) {
+            return response($th->getMessage());
         }
     }
 
@@ -59,7 +119,21 @@ class DashboardController extends Controller
                         ->first();
             return response($state->isactive);
         } catch (\Throwable $th) {
-            return response('error');
+            return response($th);
+        }
+    }
+
+    public function espGetMachineStateSuhu(Request $request)
+    {
+        try {
+            $machineid = $request->machineid;
+            $state = DB::table('machines')
+                        ->select('temperature')
+                        ->where('machineid', $machineid)
+                        ->first();
+            return response($state->temperature);
+        } catch (\Throwable $th) {
+            return response($th);
         }
     }
 
@@ -70,7 +144,7 @@ class DashboardController extends Controller
             ->where('machineid', $request->machineid)
             ->update(['isactive' => $request->power]);
 
-            return response('OK. Status mesin sekarang ' . $request->power ? 'On' : 'Off');
+            return response()->noContent();
         } catch (\Throwable $th) {
             return response()->json(['message' => $th]);
         }

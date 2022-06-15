@@ -17,7 +17,7 @@ class UserFactory extends Factory
     {
         return [
             'username' => 'admin1',
-            'isAdmin' => true,
+            'role' => 'admin',
             'password' => 'admin1',
         ];
     }

@@ -24,12 +24,22 @@ Route::get('/sayhello', function () {
 });
 
 Route::get('/machine-state', [App\Http\Controllers\DashboardController::class, 'getMachineState']);
+
+Route::get('/ayakan-state', [App\Http\Controllers\DashboardController::class, 'getAyakanState']);
+
 Route::post('/set-machine-power', [App\Http\Controllers\DashboardController::class, 'setMachinePower']);
+
+Route::post('/set-ayakan-power', [App\Http\Controllers\DashboardController::class, 'setAyakanPower']);
+
 Route::post('/set-machine-suhu', [App\Http\Controllers\DashboardController::class, 'setMachineTemperature']);
 // get produksi (hari ini, 7 hari ke belakang, dan bulan ini)
 Route::get('/get-prod', [App\Http\Controllers\StatsController::class, 'getProd']);
 // simpan produksi. params = machineid, weight, timestamp
 Route::post('/set-prod', [App\Http\Controllers\StatsController::class, 'setProd']);
 
+Route::post('/set-prod-alt', [App\Http\Controllers\StatsController::class, 'setProdAlt']);
+
 // esp
 Route::get('/esp-machine-state', [App\Http\Controllers\DashboardController::class, 'espGetMachineState']);
+Route::get('/esp-machine-todayprod', [App\Http\Controllers\DashboardController::class, 'espGetMachineTodayProd']);
+

@@ -19,7 +19,7 @@ class StatFactory extends Factory
         $machineids = ['abc123', 'bcd456', 'efg789', 'hij123', 'klm456'];
         return [
             'machineid' => $machineids[array_rand($machineids, 1)],
-            'weight' => (rand(0,50) / 10),
+            'weight' => (rand(0, 4999) / 10),
             'created_at' => $timestamp,
             'updated_at' => $timestamp
         ];

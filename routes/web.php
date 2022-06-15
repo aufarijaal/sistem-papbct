@@ -21,14 +21,18 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthController::class, 'login'])->name('login');
     Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthController::class, 'register'])->name('register');
+    Route::match(['GET', 'POST'], '/register-owner', [App\Http\Controllers\Auth\AuthController::class, 'registerOwner'])->name('register-owner');
 });
 
+Route::get('/get-all-stats', [App\Http\Controllers\StatsController::class, 'getAllStats'])->name('getallstats');
+Route::get('/download-all-stats', [App\Http\Controllers\StatsController::class, 'exportPDF'])->name('downloadallstats');
 
 // Authenticated Users / Admin
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/stats', [App\Http\Controllers\StatsController::class, 'index'])->name('stats');
     Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings');
+
 
     // update machine id bound (bound or unbound)
     Route::post('/bond', [App\Http\Controllers\SettingsController::class, 'updateBond'])->name('bond');
@@ -39,6 +43,11 @@ Route::middleware('auth')->group(function () {
     // delete machine id
     Route::post('/deletemachineid', [App\Http\Controllers\SettingsController::class, 'deletemachineid'])->name('deletemachineid');
 
+    Route::post('/registerpekerjafromowner', [App\Http\Controllers\SettingsController::class, 'registerPekerjaFromOwner'])->name('registerpekerjafromowner');
+
+    Route::post('/resetpasswordpekerja', [App\Http\Controllers\SettingsController::class, 'resetPasswordPekerja'])->name('resetpasswordpekerja');
+
+    Route::post('/deletepekerja', [App\Http\Controllers\SettingsController::class, 'deletePekerja'])->name('deletepekerja');
 
     Route::get('/logout', [App\Http\Controllers\Auth\AuthController::class, 'logout'])->name('logout');
 });
@@ -52,13 +61,21 @@ Route::prefix('run')->group(function () {
     // cache route
     Route::get('/cache-route', function () {
         Artisan::call('route:cache');
+        dd(Artisan::output());
     });
     // cache config
     Route::get('/cache-config', function () {
         Artisan::call('config:cache');
+        dd(Artisan::output());
     });
     // optimize
     Route::get('/optimize', function () {
         Artisan::call('optimize');
+        dd(Artisan::output());
+    });
+    // migrate refresh seed
+    Route::get('/reset-seed-database', function () {
+        Artisan::call('migrate:refresh --seed');
+        dd(Artisan::output());
     });
 });
