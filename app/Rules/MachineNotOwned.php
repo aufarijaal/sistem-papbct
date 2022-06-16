@@ -40,6 +40,6 @@ class MachineNotOwned implements Rule
      */
     public function message()
     {
-        return 'ID mesin salah';
+        return 'Kesalahan pada ID mesin';
     }
 }

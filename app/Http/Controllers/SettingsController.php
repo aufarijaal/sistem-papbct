@@ -64,7 +64,7 @@ class SettingsController extends Controller
     public function updateBond(Request $request)
     {
         $option = $request->option;
-        $owner_username = $request->owner_username ?? auth()->user()->owner_username;
+        $owner_username = $request->owner_username ?? auth()->user()->username;
 
         if($option == 'bind') {
             $machine = DB::table('machines')

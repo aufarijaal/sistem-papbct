@@ -13,11 +13,12 @@
                     <form action="{{ route('bond') }}" method="POST" class="flex flex-col gap-4 items-center">
                         @csrf
                         <div class="flex flex-col gap-2">
-                            <div class="flex gap-2">
+                            <x-help-tooltip>
                                 <label for="machineid-label">ID mesin</label>
-                                <svg id="help-id-mesin" width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.478 10 10s-4.477 10-10 10S2 17.522 2 12 6.477 2 12 2Zm0 13.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm0-8.75A2.75 2.75 0 0 0 9.25 9.5a.75.75 0 0 0 1.493.102l.007-.102a1.25 1.25 0 1 1 2.5 0c0 .539-.135.805-.645 1.332l-.135.138c-.878.878-1.22 1.447-1.22 2.53a.75.75 0 0 0 1.5 0c0-.539.135-.805.645-1.332l.135-.138c.878-.878 1.22-1.447 1.22-2.53A2.75 2.75 0 0 0 12 6.75Z" fill="#0284c7"/></svg>
-                            </div>
-                            <input class="disabled:bg-zinc-400 invalid:border-red-500 h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="text" name="machineid" placeholder="masukkan id mesin" required {{ isset($machineid) ? 'readonly' : '' }} value="{{ $machineid == null ? '' : $machineid }}">
+                            </x-help-tooltip>
+                            <x-peek-password>
+                                <input class="disabled:bg-zinc-400 invalid:border-red-500 h-10 w-68 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="machineid" placeholder="masukkan id mesin" required {{ isset($machineid) ? 'readonly' : '' }} value="{{ $machineid == null ? '' : $machineid }}">
+                            </x-peek-password>
                             <input type="hidden" name="option" value="{{ $machineid == null ? 'bind' : 'unbind' }}">
                             @if (Session::has('failed'))
                                 <p class="text-xs text-red-500" id="error-machine-id">{{ Session::get('failed') }}</p>
@@ -41,20 +42,24 @@
                     @csrf
                     <div class="flex flex-col gap-2">
                         <label for="current_password">Kata sandi lama</label>
-                        <input id="current_password" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="current_password" placeholder="masukkan sandi lama" required>
-                        @foreach ($errors->all() as $error)
-                            <p class="text-xs text-red-500" id="error-password-change">{{ $error }}</p>
-                        @endforeach
-                        @if (Session::has('change-success'))
-                            <p class="text-xs text-green-500" id="success-password-change">{{ Session::get('change-success') }}</p>
-                        @endif
-                        @php
-                            Session::forget('change-success');
-                        @endphp
+                        <x-peek-password>
+                            <input id="current_password" class="h-10 w-68 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="current_password" placeholder="masukkan sandi lama" required>
+                            @foreach ($errors->all() as $error)
+                                <p class="text-xs text-red-500" id="error-password-change">{{ $error }}</p>
+                            @endforeach
+                            @if (Session::has('change-success'))
+                                <p class="text-xs text-green-500" id="success-password-change">{{ Session::get('change-success') }}</p>
+                            @endif
+                            @php
+                                Session::forget('change-success');
+                            @endphp
+                        </x-peek-password>
                     </div>
                     <div class="flex flex-col gap-2">
                         <label for="new_password">Kata sandi baru</label>
-                        <input id="new_password" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="new_password" required placeholder="masukkan sandi baru">
+                        <x-peek-password>
+                            <input id="new_password" class="h-10 w-68 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="new_password" required placeholder="masukkan sandi baru">
+                        </x-peek-password>
                     </div>
                     <button type="submit" class="active:bg-sky-300 active:text-sky-600 bg-sky-200 text-sky-500 font-bold w-36 h-10 rounded-lg">Simpan Sandi</button>
                 </form>
@@ -67,11 +72,15 @@
                     @csrf
                     <div class="flex flex-col gap-2">
                         <label for="pekerja_username">Username</label>
-                        <input id="pekerja_username" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="text" name="pekerja_username" required placeholder="username pekerja">
+                        <x-fill-space>
+                            <input id="pekerja_username" class="h-10 w-68 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="text" name="pekerja_username" required placeholder="username pekerja">
+                        </x-fill-space>
                     </div>
                     <div class="flex flex-col gap-2">
                         <label for="pekerja_password">Kata sandi</label>
-                        <input id="pekerja_password" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="pekerja_password" required placeholder="sandi pekerja">
+                        <x-peek-password>
+                            <input id="pekerja_password" class="h-10 w-68 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="pekerja_password" required placeholder="sandi pekerja">
+                        </x-peek-password>
                     </div>
                     @if (Session::has('owner-settings-pekerja-success'))
                         <p class="text-xs text-green-500">{{ Session::get('owner-settings-pekerja-success') }}</p>
@@ -95,7 +104,7 @@
                                 <th class="border border-black/20">Hapus</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="border-collapse">
                             @foreach ($employees as $employee)
                                 <tr>
                                     <td class="border border-black/20">{{ $loop->iteration }}</td>
@@ -123,8 +132,8 @@
 @push('scripts')
     <script>
     tippy('#help-id-mesin', {
-        content: '<strong>ID mesin</strong> digunakan untuk menghubungkan akun Anda dengan mesin pembuat bubuk cangkang telur anda. <br><br>Misalnya Anda ingin melihat data statistik dari mesin Anda, maka id mesin ini akan dikirim ke server untuk menentukan data statistik dari mesin yang mana yang akan diperlihatkan karena <strong>setiap owner memiliki id mesin yang berbeda-beda.</strong>',
-        trigger: 'click',
+        content: '<strong style="color: #F5C642;">ID mesin</strong> digunakan untuk menghubungkan akun Anda dengan mesin pembuat bubuk cangkang telur anda. <br><br>Misalnya Anda ingin melihat data statistik dari mesin Anda, maka id mesin ini akan dikirim ke server untuk menentukan data statistik dari mesin yang mana yang akan diperlihatkan karena <strong style="color: #F5C642;">setiap owner memiliki id mesin yang berbeda-beda.</strong>',
+        trigger: 'mouseenter click',
         placement: 'bottom',
         allowHTML: true
     });

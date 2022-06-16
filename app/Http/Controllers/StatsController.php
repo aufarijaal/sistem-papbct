@@ -74,7 +74,7 @@ class StatsController extends Controller
         return response($stat . ' OK. berhasil membuat produksi baru [' . $date . '] => ' . $request->weight . ' Kg');
     }
 
-    public function setProdAlt(Request $request)
+    public function simpanProduksi(Request $request)
     {
         $date = date(now('Asia/Jakarta'));
         $stat = DB::table('stats')->insert([
@@ -83,6 +83,6 @@ class StatsController extends Controller
             'created_at' => $date,
             'updated_at' => $date
         ]);
-        return response($stat . ' OK. berhasil membuat produksi baru [' . $date . '] => ' . $request->berat . ' Kg');
+        return response()->json(['message' => $stat . ' OK. berhasil membuat produksi baru [' . $date . '] => ' . $request->berat . ' Gram']);
     }
 }

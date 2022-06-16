@@ -62,7 +62,7 @@
                 <h4 class="text-gray-500 mx-2 md:mx-0">Aplikasi untuk mengontrol dan memonitoring Prototype Alat Pembuat Bubuk Cangkang Telur</h4>
                 <div class="flex gap-3 flex-col items-center lg:flex-row ">
                     <a class="font-bold bg-indigo-200 text-indigo-500 h-12 w-32 rounded-lg flex items-center justify-center" href="{{ route('login') }}">Login</a>
-                    <a class="font-bold bg-indigo-200 text-indigo-500 h-12 w-36 rounded-lg flex items-center justify-center" href="{{ route('register') }}">Register Pekerja</a>
+                    {{-- <a class="font-bold bg-indigo-200 text-indigo-500 h-12 w-36 rounded-lg flex items-center justify-center" href="{{ route('register') }}">Register Pekerja</a> --}}
                     <a class="font-bold bg-indigo-200 text-indigo-500 h-12 w-36 rounded-lg flex items-center justify-center" href="{{ route('register-owner') }}">Register Owner</a>
                 </div>
               </div>

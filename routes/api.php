@@ -34,10 +34,10 @@ Route::post('/set-ayakan-power', [App\Http\Controllers\DashboardController::clas
 Route::post('/set-machine-suhu', [App\Http\Controllers\DashboardController::class, 'setMachineTemperature']);
 // get produksi (hari ini, 7 hari ke belakang, dan bulan ini)
 Route::get('/get-prod', [App\Http\Controllers\StatsController::class, 'getProd']);
-// simpan produksi. params = machineid, weight, timestamp
+// simpan produksi dari esp8266. params = machineid, weight, timestamp
 Route::post('/set-prod', [App\Http\Controllers\StatsController::class, 'setProd']);
-
-Route::post('/set-prod-alt', [App\Http\Controllers\StatsController::class, 'setProdAlt']);
+// simpan produksi dari web
+Route::post('/simpanproduksi', [App\Http\Controllers\StatsController::class, 'simpanProduksi'])->name('simpanproduksi');
 
 // esp
 Route::get('/esp-machine-state', [App\Http\Controllers\DashboardController::class, 'espGetMachineState']);

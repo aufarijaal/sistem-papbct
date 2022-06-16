@@ -15,6 +15,13 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+        <style type="text/tailwindcss">
+            @layer base {
+                html {
+                    -webkit-tap-highlight-color: transparent;
+                }
+            }
+        </style>
         {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
 
         <!-- Scripts -->
@@ -41,5 +48,8 @@
         <div id="app">
             @yield('slot')
         </div>
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+    @stack('scripts')
     </body>
 </html>

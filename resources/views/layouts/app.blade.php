@@ -15,6 +15,14 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+
+        <style type="text/tailwindcss">
+            @layer base {
+                html {
+                    -webkit-tap-highlight-color: transparent;
+                }
+            }
+        </style>
         {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
 
         {{-- @livewireStyles --}}
@@ -116,6 +124,9 @@
             @media (min-width: 1536px) {
 
             }
+            #main-content {
+                background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='70' height='70' patternTransform='scale(2) rotate(0)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(0,0%,100%,1)'/><path d='M-4.8 4.44L4 16.59 16.14 7.8M32 30.54l-13.23 7.07 7.06 13.23M-9 38.04l-3.81 14.5 14.5 3.81M65.22 4.44L74 16.59 86.15 7.8M61 38.04l-3.81 14.5 14.5 3.81'  stroke-linecap='square' stroke-width='1' stroke='hsla(259, 59%, 59%, 0.1)' fill='none'/><path d='M59.71 62.88v3h3M4.84 25.54L2.87 27.8l2.26 1.97m7.65 16.4l-2.21-2.03-2.03 2.21m29.26 7.13l.56 2.95 2.95-.55'  stroke-linecap='square' stroke-width='1' stroke='hsla(340, 82%, 52%, 0.1)' fill='none'/><path d='M58.98 27.57l-2.35-10.74-10.75 2.36M31.98-4.87l2.74 10.65 10.65-2.73M31.98 65.13l2.74 10.66 10.65-2.74'  stroke-linecap='square' stroke-width='1' stroke='hsla(199, 98%, 48%, 0.1)' fill='none'/><path d='M8.42 62.57l6.4 2.82 2.82-6.41m33.13-15.24l-4.86-5.03-5.03 4.86m-14-19.64l4.84-5.06-5.06-4.84'  stroke-linecap='square' stroke-width='1' stroke='hsla(47, 81%, 61%, 0.1)' fill='none'/></pattern></defs><rect width='800%' height='800%' transform='translate(0,0)' fill='url(%23a)'/></svg>")
+            }
         </style>
     </head>
     <body class="font-sans antialiased">
@@ -147,17 +158,18 @@
         </div>
         {{-- Modal untuk reset password pekerja --}}
         <div class="w-screen h-screen bg-black/80 fixed overflow-x-hidden overflow-y-hidden hidden justify-center items-center" style="z-index: 999999" id="reset-password-pekerja-modal">
-            <div class="w-80 h-44 bg-white absolute rounded-lg flex flex-col justify-center items-center gap-1 px-2" style="z-index: 10000000">
+            <div class="w-80 h-48 bg-white absolute rounded-lg flex flex-col justify-center items-center gap-1 px-2" style="z-index: 10000000">
                 <div id="close-modal" class="w-full flex justify-end" onclick="toggleModalResetPasswordPekerja()">
                     <svg width="24" height="24" class="fill-zinc-700 cursor-pointer" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.21 4.387.083-.094a1 1 0 0 1 1.32-.083l.094.083L12 10.585l6.293-6.292a1 1 0 1 1 1.414 1.414L13.415 12l6.292 6.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083L12 13.415l-6.293 6.292a1 1 0 0 1-1.414-1.414L10.585 12 4.293 5.707a1 1 0 0 1-.083-1.32l.083-.094-.083.094Z"/></svg>
                 </div>
                 <div class="w-full">
                     <form action="{{ route('resetpasswordpekerja') }}" method="POST" class="w-full h-full flex items-center flex-col gap-1" id="form-reset-password-pekerja">
                         @csrf
+                        <label for="pekerja_id" class="mb-2">Reset Kata Sandi Pekerja</label>
                         <input type="hidden" name="pekerja_id" id="pekerja_id">
-                        <div class="flex flex-col gap-2">
-                            <input id="pekerja_password" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="pekerja_password" required placeholder="sandi pekerja">
-                        </div>
+                        <x-peek-password>
+                            <input id="pekerja_password" class="h-10 w-68 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="pekerja_password" required placeholder="sandi pekerja">
+                        </x-peek-password>
                         <button type="submit" class="active:bg-sky-300 active:text-sky-600 bg-sky-200 text-sky-500 font-bold w-36 h-10 rounded-lg">Simpan Sandi</button>
                     </form>
                 </div>
@@ -169,7 +181,7 @@
 
         <div id="app">
             <div class="dashboard">
-                <main>
+                <main id="main-content">
                   <div class="w-full h-full">
                     <!-- bg-slate-800 sm:bg-red-500 md:bg-orange-400 lg:bg-green-400 xl:bg-blue-900 -->
                       <div id="main-content" class="text-2xl flex items-center text-center text-zinc-900 tracking-wide lg:text-left lg:pl-10">

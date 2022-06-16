@@ -9,18 +9,27 @@
         <div id="chart-wrapper" class="w-11/12 md:w-2/3">
             <canvas id="stat-chart" class="bg-white rounded-lg border-2 border-zinc-200 lg:p-2"></canvas>
         </div>
-        <form action="#" method="post" id="form-tambah-produksi">
+        <div id="form-tambah-produksi" class="flex flex-col items-center gap-3">
             <label for="berat" class="text-sm mr-2" style="font-weight: 600;">Tambah Produksi</label>
             <input type="text" name="berat" id="berat" placeholder="Masukkan berat dalam gram" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md placeholder:text-sm text-sm">
             <input type="hidden" value="{{ isset($machineid) ? $machineid : 'belum terhubung' }}">
-        </form>
-        <div class="filter-date-wrapper">
+            <button class="w-28 h-10 rounded-full appearance-none bg-red-100 text-red-500 cursor-pointer outline-none border-0" id="tambah-produksi">Tambah</button>
+        </div>
+        <div class="filter-date-wrapper flex gap-3">
+            <div onclick="changeChartType()" id="change-chart-type" class="flex rounded-full gap-4 w-32 h-10 items-center justify-center cursor-pointer" style="background-color: rgb(255, 244, 198)">
+                <span id="type-label" style="color: #e4ad21">Garis</span>
+                <div id="data-bar" class="hidden">
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.75 3a2.25 2.25 0 0 1 2.248 2.25v13.5a2.25 2.25 0 1 1-4.498 0V5.25A2.25 2.25 0 0 1 5.75 3Zm6.5 4a2.25 2.25 0 0 1 2.248 2.25v9.5a2.25 2.25 0 1 1-4.498 0v-9.5A2.25 2.25 0 0 1 12.25 7Zm6.5 4a2.25 2.25 0 0 1 2.248 2.25v5.5a2.25 2.25 0 1 1-4.498 0v-5.5A2.249 2.249 0 0 1 18.75 11Z" fill="#fbbf24"/></svg>
+                </div>
+                <div id="data-line" class="block">
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 6a3 3 0 1 1 2.524 2.962l-2.038 3.358a3 3 0 0 1-4.749 3.65l-3.741 1.87a3 3 0 1 1-.461-1.446l3.531-1.765a3 3 0 0 1 4.275-3.313l1.798-2.963A2.995 2.995 0 0 1 16 6Z" fill="#fbbf24"/></svg>
+                </div>
+            </div>
             <select onchange="update()" class="w-28 h-10 rounded-full appearance-none pl-3 bg-teal-100 text-teal-500 cursor-pointer outline-none border-0" name="filter-date" id="filter-date">
                 <option value="hari">Hari ini</option>
                 <option value="pekan">7 Hari</option>
                 <option value="bulan">Bulan ini</option>
             </select>
-            <button class="w-28 h-10 rounded-full appearance-none bg-red-100 text-red-500 cursor-pointer outline-none border-0" id="tambah-produksi">Tambah</button>
         </div>
         <!--<div class="w-28 h-10 rounded-full appearance-none bg-indigo-100 text-indigo-500 cursor-pointer outline-none border-0 flex justify-center items-center"><a href="{{ route('downloadallstats') }}">Ekspor PDF</a></div>-->
     </div>
@@ -44,9 +53,14 @@
     const btnTambahProduksi = document.getElementById('tambah-produksi')
     const berat = document.getElementById('berat')
 
+    berat.addEventListener("keyup", ({key}) => {
+        if (key === "Enter") {
+            btnTambahProduksi.click()
+        }
+    })
     btnTambahProduksi.addEventListener('click', () => {
-        if(id.innerText != 'belum terhubung') {
-            fetch(`${window.location.origin}/api/set-prod-alt`, {
+        if(id.innerText != 'belum terhubung' && !isNaN(berat.value) && berat.value.length != 0) {
+            fetch(`${window.location.origin}/api/simpanproduksi`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -55,12 +69,20 @@
                                 }),
                             })
                             .then((response) => {
-                                response.status == 200 ? alert('berhasil') : alert('tambah produksi gagal')
-                                document.location.reload()
+                                if(response.status == 200) {
+                                    return response.json()
+                                }
+                                else {
+                                    alert('tambah produksi gagal')
+                                }
+                                // document.location.reload()
+                            })
+                            .then((data) => {
+                                alert(data.message)
                             })
                             .catch(err => console.log(err))
         }else {
-            alert('anda belum menghubungkan id mesin')
+            alert('tidak terhubung ke mesin atau\nberat yang diisikan salah')
         }
     })
 
@@ -207,6 +229,26 @@
                 }
             }
             statChart.update()
+        } catch (error) {
+            alert(error.stack)
+        }
+    }
+
+    const changeChartType = () => {
+        try {
+            if(config.type == 'line') {
+                config.type = 'bar'
+                statChart.update()
+                document.getElementById('data-line').classList.replace('block', 'hidden')
+                document.getElementById('data-bar').classList.replace('hidden', 'block')
+                document.getElementById('type-label').innerText = 'Batang'
+            }else if(config.type == 'bar') {
+                config.type = 'line'
+                statChart.update()
+                document.getElementById('data-bar').classList.replace('block', 'hidden')
+                document.getElementById('data-line').classList.replace('hidden', 'block')
+                document.getElementById('type-label').innerText = 'Garis'
+            }
         } catch (error) {
             alert(error.stack)
         }

@@ -20,12 +20,12 @@
             </div>
         </div>
         <div class="flex flex-col gap-7">
-            <div class="transition-transform active:scale-90 card flex flex-col w-56 h-32 rounded-xl text-center gap-6 pt-4 bg-orange-100">
+            <div id="suhu-mesin-card" class="transition-transform active:scale-90 card flex flex-col w-56 h-32 rounded-xl text-center gap-6 pt-4 bg-orange-100">
                 <span class="text-xl text-zinc-900" style="font-weight: 800;">{{ __('Suhu Mesin') }} </span>
                 <span id="temp" class="text-2xl animate-pulse text-orange-500" style="font-weight: 800;">0&deg; C</span>
             </div>
             @if (auth()->user()->role == 'owner')
-                <div class="transition-transform active:scale-90 card flex flex-col w-56 h-32 rounded-xl text-center gap-6 pt-4 bg-teal-100">
+                <div id="produksi-card" class="transition-transform active:scale-90 card flex flex-col w-56 h-32 rounded-xl text-center gap-6 pt-4 bg-teal-100">
                     <span class="text-xl text-zinc-900" style="font-weight: 800;">{{ 'Produksi Hr ini' }} </span>
                     <span id="prod" class="text-2xl animate-pulse text-teal-500" style="font-weight: 800;">0 Kg</span>
                 </div>
@@ -34,14 +34,14 @@
     </div>
     @if (auth()->user()->role == 'pekerja')
         <div class="lg:translate-y-32 flex justify-center mb-4">
-            <form action="#" method="post" id="form-tambah-produksi">
+            <div id="form-tambah-produksi">
                 <div class="flex flex-col lg:flex-row gap-3 lg:gap-2 justify-center items-center">
                     <label for="berat" class="text-sm mr-2" style="font-weight: 600;">Tambah Produksi</label>
                     <input type="text" name="berat" id="berat" placeholder="Masukkan berat dalam gram" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md placeholder:text-sm text-sm">
                     <input type="hidden" value="{{ isset($machineid) ? $machineid : 'belum terhubung' }}">
                     <button class="w-28 h-10 rounded-full appearance-none bg-red-100 text-red-500 cursor-pointer outline-none border-0" type="submit" id="tambah-produksi">Tambah</button>
                 </div>
-            </form>
+            </div>
         </div>
     @endif
 
@@ -54,6 +54,16 @@
             .vibrate {
 	            -webkit-animation: vibrate-animation 0.5s infinite both;
 	            animation: vibrate-animation 0.5s infinite both;
+            }
+            #suhu-mesin-card {
+                background-image: url("data:image/svg+xml,%3Csvg width='180' height='180' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='rgba(249, 115, 22, 0.1)' d='M17 3H21V5H17V3M17 7H21V9H17V7M17 11H21V13H17.75L17 12.1V11M21 15V17H19C19 16.31 18.9 15.63 18.71 15H21M7 3V5H3V3H7M7 7V9H3V7H7M7 11V12.1L6.25 13H3V11H7M3 15H5.29C5.1 15.63 5 16.31 5 17H3V15M15 13V5C15 3.34 13.66 2 12 2S9 3.34 9 5V13C6.79 14.66 6.34 17.79 8 20S12.79 22.66 15 21 17.66 16.21 16 14C15.72 13.62 15.38 13.28 15 13M12 4C12.55 4 13 4.45 13 5V8H11V5C11 4.45 11.45 4 12 4Z' /%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: 200% top;
+            }
+            #produksi-card {
+                background-image: url("data:image/svg+xml,%3Csvg width='180' height='180' fill='none' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3.75 3a.75.75 0 0 0 0 1.5h1.042l-2.737 6.717A.75.75 0 0 0 2 11.5a3.5 3.5 0 1 0 7 0 .75.75 0 0 0-.055-.283L6.208 4.5h5.042v12H7.253a2.25 2.25 0 0 0 0 4.5h9.497a2.25 2.25 0 0 0 0-4.5h-4v-12h5.042l-2.737 6.717A.75.75 0 0 0 15 11.5a3.5 3.5 0 1 0 7 0 .75.75 0 0 0-.055-.283L19.208 4.5h1.042a.75.75 0 0 0 0-1.5H3.75ZM5.5 6.738l1.635 4.012h-3.27L5.5 6.738Zm11.365 4.012L18.5 6.738l1.635 4.012h-3.27Z' fill='rgba(20, 184, 166, 0.1)'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: 200% top;
             }
             @-webkit-keyframes vibrate-animation {
                 0% {
@@ -179,6 +189,7 @@
             const ayakanOnOffIndicatorText = document.getElementById('ayakan-on-off-indicator-text')
             const temp = document.getElementById('temp')
             const prod = document.getElementById('prod')
+            const berat = document.getElementById('berat')
             const btnTambahProduksi = document.getElementById('tambah-produksi')
 
             // looping untuk terus cek keadaan mesin off /on
@@ -261,24 +272,38 @@
                 }
             }
             @if (auth()->user()->role == 'pekerja')
+                berat.addEventListener("keyup", ({key}) => {
+                    if (key === "Enter") {
+                        btnTambahProduksi.click()
+                    }
+                })
                 btnTambahProduksi.addEventListener('click', () => {
-                if(id.innerText != 'belum terhubung') {
-                    fetch(`${window.location.origin}/api/set-prod-alt`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                        machineid: id.innerText,
-                                        berat: parseFloat(berat.value)
-                                        }),
-                                    })
-                                    .then((response) => {
-                                        response.status == 200 ? alert('berhasil') : alert('tambah produksi gagal')
-                                        document.location.reload()
-                                    })
-                                    .catch(err => console.log(err))
-                }else {
-                    alert('anda belum menghubungkan id mesin')
-                }
+                    if(id.innerText != 'belum terhubung' && !isNaN(berat.value) && berat.value.length != 0) {
+                        fetch(`${window.location.origin}/api/simpanproduksi`, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            machineid: id.innerText,
+                                            berat: parseFloat(berat.value)
+                                            }),
+                                        })
+                                        .then((response) => {
+                                            if(response.status == 200) {
+                                                return response.json()
+                                            }
+                                            else {
+                                                alert('tambah produksi gagal')
+                                            }
+                                            // document.location.reload()
+                                        })
+                                        .then((data) => {
+                                            alert(data.message)
+                                        })
+                                        .catch(err => console.log(err))
+                    }else {
+                        alert('tidak terhubung ke mesin atau\nberat yang diisikan salah')
+                    }
+                })
             @endif
         </script>
     @endpush
