@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         {{-- @laravelPWA --}}
         <title>{{ env('APP_NAME', 'Sistem Kontrol dan Monitoring Prototype Alat Pembuat Bubuk Cangkang Telur') }}</title>
-
+        <link rel="icon" href="{{ asset('icons/icon-72x72.png') }}" type='image/x-icon'>
         <!-- Fonts -->
         {{-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"> --}}
 
@@ -261,37 +261,6 @@
     <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
     @stack('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            if(window.location.pathname == '/dashboard' || window.location.pathname == '/stats' || window.location.pathname == '/settings') {
-                const machineid = document.getElementById('machine-id-value')
-                localStorage.setItem('machineid', machineid.innerText != 'belum terhubung' ? machineid.innerText : 'belum terhubung')
-                localStorage.setItem('loggedin', 'true')
-                if(machineid.innerText != 'belum terhubung') {
-                    for (let i = 0; i < 3; i++) {
-                        let url = `${window.location.origin}/api/get-prod?filter=${i == 0 ? 'hari' : i == 1 ? 'pekan' : 'bulan'}&machineid=${id.innerText}`
-                        let response = await fetch(url)
-                        let data = await response.json()
-
-                        const result =  {
-                            length: data.length,
-                            title: i == 0 ? 'Produksi hari ini' : i == 1 ? 'Produksi selama 7 hari' : 'Produksi selama 30 hari',
-                            data: data.map((e) => e.weight),
-                            labels: data.map((e) => {return i == 0 ? e.created_at.split(' ')[1].substring(0, 5) : e.created_at.split(' ')[0].substring(5).replace('-', '/')})
-                        }
-                        localStorage.setItem(i == 0 ? 'cache_hari' : i == 1 ? 'cache_pekan' : 'cache_bulan', JSON.stringify(result))
-                        console.log((i == 0 ? 'cache_hari saved ' : i == 1 ? 'cache_pekan saved ' : 'cache_bulan saved ').concat(new Date().toLocaleDateString('id-ID', {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                            hour12: false
-                        })))
-                    }
-                }
-            }
-        })
         const toggleModalMenu = () => {
             if(document.getElementById('menu-modal').classList.contains('hidden')) {
                 document.getElementById('menu-modal').classList.remove('hidden')

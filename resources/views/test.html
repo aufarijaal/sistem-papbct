@@ -9,120 +9,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 </head>
 <body>
-    <div id="canvas-wrapper" style="padding: 0 20px;">
-        <canvas id="stat-chart"></canvas>
-    </div>
-    <select onchange="update()" name="filter-date" id="filter-date">
-        <option value="hari">Hari ini</option>
-        <option value="pekan">7 Hari</option>
-        <option value="bulan">30 Hari</option>
-    </select>
+    <table>
+        <tr>
+            <td><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M25.06 13.72c-.944-5.173-5.46-9.095-10.903-9.095v4a7.104 7.104 0 0 1 7.094 7.094a7.104 7.104 0 0 1-7.093 7.092v4.002c5.442-.004 9.96-3.926 10.903-9.096h4.69v-4h-4.69zm-4.685 2a6.216 6.216 0 0 0-12.103-2.002H1.438v4h6.834a6.216 6.216 0 0 0 12.104-2z"/></svg></td>
+            <td><p class="text-xs">Tombol Hubung, Klik untuk beri akses ke seorang owner</p></td>
+        </tr>
+        <tr>
+            <td><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M9.22 9.5a6.219 6.219 0 0 0-5.885 4.218H1.438v4h1.897a6.216 6.216 0 0 0 12.102-2A6.217 6.217 0 0 0 9.218 9.5zm18.465 4.22c-.944-5.173-5.46-9.095-10.903-9.095v4a7.104 7.104 0 0 1 7.094 7.094a7.106 7.106 0 0 1-7.094 7.092v4.002c5.442-.004 9.96-3.926 10.903-9.096h2.065v-4h-2.065z"/></svg></td>
+            <td><p class="text-xs">Tombol Lepas, Klik untuk hapus akses owner yg terhubung</p></td>
+        </tr>
+        <tr>
+            <td><svg class="mr-2" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.5 6a1 1 0 0 1-.883.993L20.5 7h-.845l-1.231 12.52A2.75 2.75 0 0 1 15.687 22H8.313a2.75 2.75 0 0 1-2.737-2.48L4.345 7H3.5a1 1 0 0 1 0-2h5a3.5 3.5 0 1 1 7 0h5a1 1 0 0 1 1 1Zm-7.25 3.25a.75.75 0 0 0-.743.648L13.5 10v7l.007.102a.75.75 0 0 0 1.486 0L15 17v-7l-.007-.102a.75.75 0 0 0-.743-.648Zm-4.5 0a.75.75 0 0 0-.743.648L9 10v7l.007.102a.75.75 0 0 0 1.486 0L10.5 17v-7l-.007-.102a.75.75 0 0 0-.743-.648ZM12 3.5A1.5 1.5 0 0 0 10.5 5h3A1.5 1.5 0 0 0 12 3.5Z"/></svg></td>
+            <td><p class="text-xs">Tombol Hapus, Klik untuk hapus id mesin</p></td>
+        </tr>
+    </table>
     <script>
-        const chartCanvas = document.getElementById('stat-chart').getContext('2d')
-        const filterDate = document.getElementById('filter-date')
-        const chartWrapper = document.getElementById('canvas-wrapper')
-
-        let delayed
-        let gradient = chartCanvas.createLinearGradient(0,0,0,450)
-        gradient.addColorStop(0, 'rgba(253,230,138, 1)');
-        gradient.addColorStop(0.5, 'rgba(253,230,138, 0.5)');
-        gradient.addColorStop(1, 'rgba(253,230,138, 0.2)');
-
-        const getData = async () => {
-            let response = await fetch(`${window.location.origin}/api/get-prod?filter=${filterDate.value}&machineid=abc123`)
-            let data = await response.json()
-
-            return {
-                title: filterDate.value === 'hari' ? 'Produksi hari ini' : filterDate.value === 'pekan' ? 'Produksi selama 7 hari' : 'Produksi selama 30 hari',
-                data: data.map((e) => e.weight),
-                labels: data.map((e) => {return filterDate.value === 'hari' ? e.created_at.split(' ')[1].substring(0, 5) : e.created_at.split(' ')[0].substring(5).replace('-', '/')})
-            }
-        }
-
-        let datasets = {
-            labels: [],
-            datasets: [{
-                backgroundColor: gradient,
-                borderWidth: 4,
-                hoverBorderWidth: 4,
-                pointRadius: 4,
-                pointHoverRadius: 8,
-                tension: 0,
-                hitRadius: 30,
-                pointBackgroundColor: '#fff',
-                borderColor: '#fbbf24',
-                fill: true,
-                data: []
-            }]
-        }
-
-        let config = {
-            type: 'line',
-            data: datasets,
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                animation: {
-                    onComplete: () => {
-                        delayed = true;
-                    },
-                    delay: (context) => {
-                        let delay = 0;
-                        if (context.type === 'data' && context.mode === 'default' && !delayed) {
-                        delay = context.dataIndex * 300 + context.datasetIndex * 100;
-                        }
-                        return delay;
-                    },
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: '',
-                        padding: {
-                            bottom: 20,
-                            top: 20
-                        }
-                    },
-                    tooltip: {
-                        enabled: true,
-                        backgroundColor: 'rgb(39,39,42)',
-                        displayColors: false
-                    }
-                },
-                scales: {
-                    y: {
-                        ticks: {
-                            callback: (value, index, ticks) => {
-                                return value + ' Kg'
-                            }
-                        }
-                    }
-                },
-            },
-        }
-
-        const update = async () => {
-            let newData = await getData()
-            console.log(newData)
-            statChart['data']['labels'] = newData.labels
-            statChart.data.datasets.forEach((dataset) => {
-                dataset['data'] = newData.data
-            })
-            statChart.options.plugins.title.text = newData.title
-            statChart.update()
-        }
-
-        let statChart = new Chart(chartCanvas, config)
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                filterDate.value = 'pekan'
-                filterDate.dispatchEvent(new Event('change'))
-            },200)
-        })
     </script>
 </body>
 </html>

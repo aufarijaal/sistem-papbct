@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
@@ -23,6 +25,88 @@ class DashboardController extends Controller
         } catch (\Throwable $th) {
             dd($th);
         }
+    }
+
+    public function dataPekerjaDanOwner()
+    {
+        if(auth()->user()->role != 'admin') {
+            return '404';
+        }
+        $users = DB::table('users')
+        ->whereIn('role', ['pekerja', 'owner'])
+        ->get(['id', 'username', 'owner_username', 'role'])
+        ->sortBy('role');
+        // dd($users);
+        return view('admin.dashboard')->with('users', $users);
+    }
+
+    public function ubahUsername(Request $request)
+    {
+        // dd($request);
+        if(User::where('username', $request->new_username)->first() != null) {
+            return back()->with('failed', 'Sudah ada username dengan nama tersebut');
+        }else {
+            if($request->role == 'owner'){
+                    User::where('owner_username', $request->old_username)
+                    ->where('role', 'pekerja')
+                    ->update(['owner_username' => $request->new_username]);
+
+                    DB::table('machines')->where('owner_username', $request->old_username)->update(['owner_username' => $request->new_username]);
+            }
+            User::where('username', $request->old_username)
+            ->update(['username' => $request->new_username]);
+
+            return back()->with('success', 'username berhasil diubah');
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        // dd($request);
+        $user = User::where('id', $request->userid)->update([
+            'password' => Hash::make($request->password)
+        ]);
+        if($user > 0) {
+            return back()->with('success', 'Berhasil reset kata sandi');
+        }else {
+            return back()->with('failed', 'Gagal reset kata sandi');
+        }
+    }
+    public function tambahOwnerFromAdmin(Request $request)
+    {
+        try {
+            User::create([
+                'username' => $request->username_owner,
+                'role' => 'owner',
+                'password' => $request->password_owner,
+            ]);
+            return back()->with('success', 'Berhasil tambah akun owner');
+        } catch (\Throwable $th) {
+            if(str_contains(strtolower($th->getMessage()), 'duplicate entry')) {
+                return back()->with('failed', 'Error duplikat');
+            }
+        }
+    }
+    public function tambahPekerjaFromAdmin(Request $request)
+    {
+        try {
+            User::create([
+                'username' => $request->username_pekerja,
+                'owner_username' => $request->username_owner_for_pekerja,
+                'password' => $request->password_pekerja,
+            ]);
+            return back()->with('success', 'Berhasil tambah akun pekerja');
+        } catch (\Throwable $th) {
+            if(str_contains(strtolower($th->getMessage()), 'duplicate entry')) {
+                return back()->with('failed', 'Error duplikat');
+            }
+        }
+    }
+    public function deletePekerjaDanOwner(Request $request)
+    {
+        User::where('id', $request->id)
+        ->delete();
+        return back()->with('success', 'Berhasil hapus data');
     }
 
     public function getDataTables()

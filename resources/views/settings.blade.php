@@ -4,6 +4,9 @@
     @push('top')
         <h1 style="font-weight: 800;">{{ __('Pengaturan') }}</h1>
         <p class="text-xs hidden">ID mesin : <span id="machine-id-value">{{ isset($machineid) ? $machineid : 'belum terhubung' }}</span></p>
+        @foreach ($errors->all() as $error)
+            <p class="text-xs text-red-500 text-center" id="error-password-change">{{ $error }}</p>
+        @endforeach
     @endpush
     <div class="settings w-full lg:mt-4 flex lg:items-start justify-center items-center flex-col lg:flex-row gap-2">
         <div class="wrapper flex flex-col bg-zinc-100 w-max h-max p-6 rounded-xl">
@@ -44,9 +47,6 @@
                         <label for="current_password">Kata sandi lama</label>
                         <x-peek-password>
                             <input id="current_password" class="h-10 w-68 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md" type="password" name="current_password" placeholder="masukkan sandi lama" required>
-                            @foreach ($errors->all() as $error)
-                                <p class="text-xs text-red-500" id="error-password-change">{{ $error }}</p>
-                            @endforeach
                             @if (Session::has('change-success'))
                                 <p class="text-xs text-green-500" id="success-password-change">{{ Session::get('change-success') }}</p>
                             @endif
@@ -129,10 +129,13 @@
             </div>
         @endif
     </div>
+    <div class="mb-20 lg:hidden">
+        <div class="w-1 h-32"></div>
+    </div>
 @push('scripts')
     <script>
     tippy('#help-id-mesin', {
-        content: '<strong style="color: #F5C642;">ID mesin</strong> digunakan untuk menghubungkan akun Anda dengan mesin pembuat bubuk cangkang telur anda. <br><br>Misalnya Anda ingin melihat data statistik dari mesin Anda, maka id mesin ini akan dikirim ke server untuk menentukan data statistik dari mesin yang mana yang akan diperlihatkan karena <strong style="color: #F5C642;">setiap owner memiliki id mesin yang berbeda-beda.</strong>',
+        content: '<strong style="color: #F5C642;">ID mesin</strong> digunakan untuk menghubungkan akun Anda dengan mesin pembuat bubuk cangkang telur anda. <br><br>Misalnya Anda atau pekerja yang anda punya ingin menyalakan mesin pengayak, maka id mesin ini akan dikirim kan ke server untuk menentukan mesin mana yang akan di nyalakan.</strong>',
         trigger: 'mouseenter click',
         placement: 'bottom',
         allowHTML: true

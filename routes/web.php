@@ -34,6 +34,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/stats', [App\Http\Controllers\StatsController::class, 'index'])->name('stats');
     Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings');
 
+    Route::get('/datapekerjadanowner', [App\Http\Controllers\DashboardController::class, 'dataPekerjaDanOwner'])->name('datapekerjadanowner');
+    Route::post('/deletepekerjadanowner', [App\Http\Controllers\DashboardController::class, 'deletePekerjaDanOwner'])->name('deletepekerjadanowner');
+    Route::post('/ubahusername', [App\Http\Controllers\DashboardController::class, 'ubahUsername'])->name('ubahusername');
+    Route::post('/resetpasswordfromadmin', [App\Http\Controllers\DashboardController::class, 'resetPassword'])->name('resetpasswordfromadmin');
+    Route::post('/tambahownerfromadmin', [App\Http\Controllers\DashboardController::class, 'tambahOwnerFromAdmin'])->name('tambahownerfromadmin');
+    Route::post('/tambahpekerjafromadmin', [App\Http\Controllers\DashboardController::class, 'tambahPekerjaFromAdmin'])->name('tambahpekerjafromadmin');
 
     // update machine id bound (bound or unbound)
     Route::post('/bond', [App\Http\Controllers\SettingsController::class, 'updateBond'])->name('bond');
@@ -77,6 +83,10 @@ Route::prefix('run')->group(function () {
     // migrate refresh seed
     Route::get('/reset-seed-database', function () {
         Artisan::call('migrate:refresh --seed');
+        dd(Artisan::output());
+    });
+    Route::get('/seed-stats', function () {
+        Artisan::call('db:seed --class=StatSeeder');
         dd(Artisan::output());
     });
 

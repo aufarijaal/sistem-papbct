@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         {{-- @laravelPWA --}}
         <title>{{ env('APP_NAME', 'Sistem Kontrol dan Monitoring Prototype Alat Pembuat Bubuk Cangkang Telur') }}</title>
-
+        <link rel="icon" href="{{ asset('icons/icon-72x72.png') }}" type='image/x-icon'>
         <!-- Fonts -->
         {{-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"> --}}
 

@@ -51,7 +51,7 @@
 @push('scripts')
     <script>
     tippy('#help-id-mesin', {
-        content: '<strong style="color: #F5C642;">ID mesin</strong> digunakan untuk menghubungkan akun Anda dengan mesin pembuat bubuk cangkang telur anda. <br><br>Misalnya Anda ingin melihat data statistik dari mesin Anda, maka id mesin ini akan dikirim ke server untuk menentukan data statistik dari mesin yang mana yang akan diperlihatkan karena <strong style="color: #F5C642;">setiap owner memiliki id mesin yang berbeda-beda.</strong>',
+        content: '<strong style="color: #F5C642;">ID mesin</strong> digunakan untuk menghubungkan akun Anda dengan mesin pembuat bubuk cangkang telur anda. <br><br>Misalnya Anda atau pekerja yang anda punya ingin menyalakan mesin pengayak, maka id mesin ini akan dikirim kan ke server untuk menentukan mesin mana yang akan di nyalakan.</strong>',
         trigger: 'mouseenter click',
         placement: 'bottom',
         allowHTML: true
