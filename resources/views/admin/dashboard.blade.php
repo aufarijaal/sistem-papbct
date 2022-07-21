@@ -412,7 +412,7 @@
         }
         tippy('#help-ubah-username', {
                 theme: 'light',
-                content: `Mengubah username dari seorang owner akan mengubah nama owner pada data pekerja (jika ada) dan mengubah nama owner pada mesin (jika terhubung)`,
+                content: `Mengubah username akun owner akan mengubah nama owner pada data pekerjanya (jika ada) dan mengubah nama owner pada mesin yang dimiliki oleh akun owner tersebut.`,
                 trigger: 'mouseenter click',
                 placement: 'bottom',
                 allowHTML: true
@@ -423,15 +423,15 @@
                 content: `<table>
             <tr>
                 <td><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="rgb(22 163 74)" d="M25.06 13.72c-.944-5.173-5.46-9.095-10.903-9.095v4a7.104 7.104 0 0 1 7.094 7.094a7.104 7.104 0 0 1-7.093 7.092v4.002c5.442-.004 9.96-3.926 10.903-9.096h4.69v-4h-4.69zm-4.685 2a6.216 6.216 0 0 0-12.103-2.002H1.438v4h6.834a6.216 6.216 0 0 0 12.104-2z"/></svg></td>
-                <td><p class="text-xs">Tombol Hubung, Klik untuk beri akses ke seorang owner</p></td>
+                <td><p class="text-xs">Klik untuk beri akses ke seorang owner</p></td>
             </tr>
             <tr>
                 <td><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="rgb(220 38 38)" d="M9.22 9.5a6.219 6.219 0 0 0-5.885 4.218H1.438v4h1.897a6.216 6.216 0 0 0 12.102-2A6.217 6.217 0 0 0 9.218 9.5zm18.465 4.22c-.944-5.173-5.46-9.095-10.903-9.095v4a7.104 7.104 0 0 1 7.094 7.094a7.106 7.106 0 0 1-7.094 7.092v4.002c5.442-.004 9.96-3.926 10.903-9.096h2.065v-4h-2.065z"/></svg></td>
-                <td><p class="text-xs">Tombol Lepas, Klik untuk hapus akses owner yg terhubung</p></td>
+                <td><p class="text-xs">Klik untuk hapus akses mesin owner</p></td>
             </tr>
             <tr>
                 <td><svg class="mr-2" width="20" height="20" fill="rgb(220 38 38)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.5 6a1 1 0 0 1-.883.993L20.5 7h-.845l-1.231 12.52A2.75 2.75 0 0 1 15.687 22H8.313a2.75 2.75 0 0 1-2.737-2.48L4.345 7H3.5a1 1 0 0 1 0-2h5a3.5 3.5 0 1 1 7 0h5a1 1 0 0 1 1 1Zm-7.25 3.25a.75.75 0 0 0-.743.648L13.5 10v7l.007.102a.75.75 0 0 0 1.486 0L15 17v-7l-.007-.102a.75.75 0 0 0-.743-.648Zm-4.5 0a.75.75 0 0 0-.743.648L9 10v7l.007.102a.75.75 0 0 0 1.486 0L10.5 17v-7l-.007-.102a.75.75 0 0 0-.743-.648ZM12 3.5A1.5 1.5 0 0 0 10.5 5h3A1.5 1.5 0 0 0 12 3.5Z"/></svg></td>
-                <td><p class="text-xs">Tombol Hapus, Klik untuk hapus id mesin</p></td>
+                <td><p class="text-xs">Klik untuk hapus id mesin</p></td>
             </tr>
         </table>`,
                 trigger: 'mouseenter click',

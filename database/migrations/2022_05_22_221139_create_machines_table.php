@@ -19,6 +19,7 @@ class CreateMachinesTable extends Migration
             $table->boolean('isactive')->default(false);
             $table->boolean('isayakanactive')->default(false);
             $table->float('temperature')->default(0);
+            $table->float('current_weight')->default(0);
             $table->timestamps();
         });
     }

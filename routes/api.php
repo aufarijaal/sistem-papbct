@@ -36,6 +36,10 @@ Route::post('/set-machine-suhu', [App\Http\Controllers\DashboardController::clas
 Route::get('/get-prod', [App\Http\Controllers\StatsController::class, 'getProd']);
 // simpan produksi dari esp8266. params = machineid, weight, timestamp
 Route::post('/set-prod', [App\Http\Controllers\StatsController::class, 'setProd']);
+// update berat yang terdeteksi dari load cell
+Route::get('/get-weight', [App\Http\Controllers\DashboardController::class, 'getWeight'])->name('getweight');
+// dapatkan berat yang terdeteksi dari load cell
+Route::post('/set-weight', [App\Http\Controllers\DashboardController::class, 'setWeight'])->name('setweight');
 // simpan produksi dari web
 Route::post('/simpanproduksi', [App\Http\Controllers\StatsController::class, 'simpanProduksi'])->name('simpanproduksi');
 

@@ -27,6 +27,33 @@ class DashboardController extends Controller
         }
     }
 
+    public function getWeight(Request $request)
+    {
+        try {
+            $machineid = $request->machineid;
+            $machine = DB::table('machines')
+                        ->select('current_weight')
+                        ->where('machineid', $machineid)
+                        ->first();
+            return response($machine->current_weight);
+        } catch (\Throwable) {
+            return response(content: 0);
+        }
+    }
+
+    public function setWeight(Request $request)
+    {
+        try {
+            $machineid = $request->machineid;
+            $result = DB::table('machines')
+                        ->where('machineid', $machineid)
+                        ->update(['current_weight' => $request->berat]);
+            return response($result);
+        } catch (\Throwable) {
+            return response('error');
+        }
+    }
+
     public function dataPekerjaDanOwner()
     {
         if(auth()->user()->role != 'admin') {
@@ -187,7 +214,7 @@ class DashboardController extends Controller
             ->orderBy('created_at')
             ->get()
             ->sum('weight');
-            return response($todayProd / 1000);
+            return response(round($todayProd / 1000, 2));
         } catch (\Throwable $th) {
             return response($th->getMessage());
         }

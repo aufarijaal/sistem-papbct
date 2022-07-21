@@ -14,6 +14,7 @@ class Machine extends Model
         'userid',
         'isactive',
         'isayakanactive',
-        'temperature'
+        'temperature',
+        'current_weight'
     ];
 }

@@ -36,15 +36,17 @@
         <div class="lg:translate-y-32 flex justify-center mb-4">
             <div id="form-tambah-produksi">
                 <div class="flex flex-col lg:flex-row gap-3 lg:gap-2 justify-center items-center">
-                    <label for="berat" class="text-sm mr-2" style="font-weight: 600;">Tambah Produksi</label>
-                    <input type="text" name="berat" id="berat" placeholder="Masukkan berat dalam gram" class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-zinc-200 bg-zinc-200 rounded-md placeholder:text-sm text-sm">
+                    <label for="berat" class="text-sm mr-2" style="font-weight: 600;">Berat Terdeteksi</label>
+                    <input type="text" name="berat" id="berat" readonly class="h-10 w-72 pl-2 outline-none focus:border-sky-300 border-2 border-sky-100 bg-sky-100 rounded-md placeholder:text-sm text-sm font-bold text-sky-500">
                     <input type="hidden" value="{{ isset($machineid) ? $machineid : 'belum terhubung' }}">
                     <button class="w-28 h-10 rounded-full appearance-none bg-red-100 text-red-500 cursor-pointer outline-none border-0" type="submit" id="tambah-produksi">Tambah</button>
                 </div>
             </div>
         </div>
     @endif
-
+    <div class="mb-20 lg:hidden">
+        <div class="w-1 h-32"></div>
+    </div>
     @push('styles')
         <style>
             .custom-spin {
@@ -227,6 +229,16 @@
                                 }
                             })
                             .catch(err => console.log(err))
+
+                            @if(auth()->user()->role == 'pekerja')
+                                fetch(`${window.location.origin}/api/get-weight?machineid=${id.innerText}`, {
+                                    'method': 'GET',
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    document.getElementById('berat').value = data
+                                })
+                            @endif
                         }, 1000);
                 } else if(id.innerText == 'belum terhubung') {
                     emitError()

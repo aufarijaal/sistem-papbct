@@ -15,15 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory()->count(1)->create();
-        // $this->call([
-        //     // MachineSeeder::class,
-        //     StatSeeder::class
-        // ]);
-        User::create([
-            'username' => 'pekerja2',
-            'password' => 'pekerja2',
-            'owner_username' => 'owner1'
+        \App\Models\User::factory()->count(1)->create();
+        $this->call([
+            MachineSeeder::class,
+            StatSeeder::class
         ]);
     }
 }
