@@ -3,7 +3,8 @@
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\DB;
+use \Barryvdh\DomPDF\Facade\Pdf;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,7 +27,22 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::get('/get-all-stats', [App\Http\Controllers\StatsController::class, 'getAllStats'])->name('getallstats');
-Route::get('/download-all-stats', [App\Http\Controllers\StatsController::class, 'exportPDF'])->name('downloadallstats');
+// Route::get('/download-all-stats', [App\Http\Controllers\StatsController::class, 'exportPDF'])->name('downloadallstats');
+Route::get('/download-all-stats', function () {
+    $machineid = DB::table('machines')->where('owner_username', auth()->user()->username)->value('machineid');
+    $stats = DB::table('stats')
+                ->select('weight', 'created_at')
+                ->where('machineid', 'abc123')
+                ->where('weight', '!=', 0)
+                ->orderBy('created_at')
+                ->get();
+    $data = [
+        "machineid" => $machineid,
+        "stats" => $stats,
+    ];
+    $pdf = PDF::loadView('get-all-stats', ["data" => $data]);
+    return $pdf->download('stats.pdf');
+})->name('downloadallstats');
 
 // Authenticated Users / Admin
 Route::middleware('auth')->group(function () {

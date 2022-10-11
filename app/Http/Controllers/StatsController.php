@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,7 +30,7 @@ class StatsController extends Controller
     }
 
     public function exportPDF() {
-        set_time_limit(300);
+        // set_time_limit(300);
         $machineid = DB::table('machines')->where('userid', auth()->user()->id)->value('machineid');
         $stats = DB::table('stats')
                     ->select('weight', 'created_at')
